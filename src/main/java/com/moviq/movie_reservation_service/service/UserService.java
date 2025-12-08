@@ -8,6 +8,9 @@ import com.moviq.movie_reservation_service.model.User;
 import com.moviq.movie_reservation_service.repository.UserRepo;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -36,12 +39,16 @@ public class UserService {
 
     }
 
-    public User findUserById(long id) throws UserNotFoundException {
-        return userRepo.findById(id).orElseThrow(()->new UserNotFoundException("No user found with id: "+id));
+    public UserDto findUserById(long id) throws UserNotFoundException {
+
+           User user = userRepo.findById(id).orElseThrow(()->new UserNotFoundException("No user found with id: "+id));
+           return userMapper.toDto(user);
+
     }
 
-    public User findUserByUsername(String username) throws UserNotFoundException {
-        return userRepo.findByEmail(username).orElseThrow(()->new UserNotFoundException("No user found with username: "+username));
+    public UserDto findUserByUsername(String username) throws UserNotFoundException {
+        User user = userRepo.findByEmail(username).orElseThrow(()->new UserNotFoundException("No user found with username: "+username));
+        return userMapper.toDto(user);
     }
 
     public List<UserDto> findUsersByRole(String role) throws UserNotFoundException {
@@ -64,4 +71,9 @@ public class UserService {
     }
 
 
+    public List<UserDto> findUserByRegisteredDate(LocalDate registeredDate) {
+        LocalDateTime start = registeredDate.atStartOfDay();
+        LocalDateTime end = registeredDate.atTime(LocalTime.MAX);
+        return userMapper.toDtoList(userRepo.findByCreatedAtBetween(start,end));
+    }
 }
