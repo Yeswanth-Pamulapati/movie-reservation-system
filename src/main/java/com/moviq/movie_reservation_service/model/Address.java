@@ -37,9 +37,9 @@ public class Address {
     @NotBlank(message = "Country cannot be blank")
     @Size(max = 30, message = "Country must be less than 31 characters")
     private String country;
-    @Column(length = 5)
+    @Column(length = 6)
     @NotBlank(message = "Zip code cannot be blank")
-    @Pattern(regexp = "^[0-9]{5}$", message = "Zip code must be exactly 5 digits")
+    @Pattern(regexp = "^[0-9]{6}$", message = "Zip code must be exactly 6 digits")
     private String zipCode;
     @ManyToOne
     @JoinColumn(name="user_id")
