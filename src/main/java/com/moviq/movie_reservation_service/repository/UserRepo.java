@@ -5,8 +5,13 @@ import com.moviq.movie_reservation_service.model.User;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -24,4 +29,15 @@ public interface UserRepo extends JpaRepository<User,Long> {
     List<User> findByFirstNameContainingIgnoreCase(String firstName);
     List<User> findByLastNameContainingIgnoreCase(String lastName);
     boolean existsByEmail(String email);
+    //Find by registered date
+    List<User> findByCreatedAtBetween(LocalDateTime start, LocalDateTime end);
+    //Update the user role
+    @Modifying //required for update/delete queries in Spring Data JPA.
+    @Query("UPDATE User u SET u.role = :newRole where u.id = :id")
+    int updateUserRole(@Param("id") long id, @Param("newRole") Role newRole ); // returns number of rows updated.
+
+    //update the user status
+    @Modifying
+    @Query("UPDATE User u SET u.status = :status where u.id = :id")
+    int updateUserStatus(@Param("id") long id, @Param("status") String status ); // returns number of rows updated.
 }
