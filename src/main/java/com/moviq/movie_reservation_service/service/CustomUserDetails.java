@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.Objects;
 
 public class CustomUserDetails implements UserDetails {
-    private User user;
+    private final User user;
     public CustomUserDetails(User user) {
         this.user = user;
     }
@@ -22,7 +22,9 @@ public class CustomUserDetails implements UserDetails {
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return List.of(new SimpleGrantedAuthority(user.getRole().name().toUpperCase()));
     }
-
+    public String getUserFirstName(){
+        return user.getFirstName();
+    }
     @Override
     public String getPassword() {
         return user.getPassword();
@@ -40,7 +42,7 @@ public class CustomUserDetails implements UserDetails {
 
     @Override
     public boolean isAccountNonLocked() {
-        return !Objects.equals(user.getStatus(), UserStatus.BLOCKED.name());
+        return !Objects.equals(user.getStatus(), UserStatus.LOCKED.name());
     }
 
     @Override

@@ -6,6 +6,8 @@ import com.moviq.movie_reservation_service.dto.UserLoginDto;
 import com.moviq.movie_reservation_service.dto.UserRegistrationDto;
 import com.moviq.movie_reservation_service.exception.UserNotFoundException;
 import com.moviq.movie_reservation_service.model.User;
+import com.moviq.movie_reservation_service.service.AuthService;
+import com.moviq.movie_reservation_service.service.JwtTokenService;
 import com.moviq.movie_reservation_service.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -35,9 +37,13 @@ import java.util.List;
 public class UserController {
 
     private final UserService userService;
+    private final AuthService authService;
+    private final JwtTokenService tokenService;
 
-    public UserController(UserService userService) {
+    public UserController(UserService userService, AuthService authService, JwtTokenService tokenService) {
         this.userService = userService;
+        this.authService = authService;
+        this.tokenService = tokenService;
     }
     @Operation(summary = "Get all the users", description = "Fetches all the existing users")
     @GetMapping
@@ -81,9 +87,11 @@ public class UserController {
 
     @Operation(summary = "User Login",description = "Authenticate user when try to login")
     @GetMapping("/login")
-    public ResponseEntity<String> userLogin(@Valid @RequestBody UserLoginDto loginDto){
-       String result = userService.login(loginDto.getEmail(),loginDto.getPassword());
-       return new ResponseEntity<>(result,HttpStatus.OK);
+    public ResponseEntity<String> userLogin(@Valid @RequestBody UserLoginDto loginRequest){
+//       String result = userService.login(loginDto.getEmail(),loginDto.getPassword());
+//       return new ResponseEntity<>(result,HttpStatus.OK);
+         String token = "token: "+authService.Authenticate(loginRequest.getEmail(),loginRequest.getPassword());
+       return new ResponseEntity<>(token, HttpStatus.OK);
 
     }
     @Operation(summary = "Update user role", description = "Update role of user with provided id")
@@ -110,11 +118,7 @@ public class UserController {
     }
 
 
-    @GetMapping("/csrf-token")
-    public CsrfToken getCSRFToken(HttpServletRequest servletRequest) {
-        return (CsrfToken) servletRequest.getAttribute("_csrf");
     }
 
-    }
 
 
