@@ -54,17 +54,17 @@ public class UserService {
         User savedUser = userRepo.save(user);//Returns the saved record if saved.
         return "User Registered Successfully" ;
     }
-
-    public String login(String username, String password){
-        User user = userRepo.findByEmail(username)
-                .orElseThrow(()-> new UsernameNotFoundException(
-                        "No User found with username "+ username+". Please check the username provided"));
-        if(!passwordEncoder.matches(password,user.getPassword())){
-            throw new BadCredentialsException("Invalid Password.");
-        }
-        return "Welcome back " + user.getFirstName() +" "+ user.getLastName();
-
-    }
+//
+//    public String login(String username, String password){
+//        User user = userRepo.findByEmail(username)
+//                .orElseThrow(()-> new UsernameNotFoundException(
+//                        "No User found with username "+ username+". Please check the username provided"));
+//        if(!passwordEncoder.matches(password,user.getPassword())){
+//            throw new BadCredentialsException("Invalid Password.");
+//        }
+//        return "Welcome back " + user.getFirstName() +" "+ user.getLastName();
+//
+//    }
 
     public UserDto findUserById(long id) throws UserNotFoundException {
 
@@ -92,6 +92,22 @@ public class UserService {
         return userMapper.toDtoList(users);
 
     }
+
+    public List<UserDto> findUsersByStatus(String status) throws UserNotFoundException {
+        UserStatus enumStatus;
+        try {
+            enumStatus = UserStatus.valueOf(status.toUpperCase());
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException("Invalid role: " + status);
+        }
+        List<User>users = userRepo.findByStatus(enumStatus.name());
+        if(users.isEmpty()){
+            throw new UserNotFoundException("No users found with role: " + status);
+        }
+        return userMapper.toDtoList(users);
+
+    }
+
 
     public List<UserDto> findAllUsers(){
         return userMapper.toDtoList(userRepo.findAll());
