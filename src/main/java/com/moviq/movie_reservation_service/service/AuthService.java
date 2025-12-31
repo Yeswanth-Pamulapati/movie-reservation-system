@@ -27,9 +27,9 @@ public class AuthService {
     }
 
     public String Authenticate(String username, String password) {
-        UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(username, password);
-            Authentication authentication = authManager.authenticate(authToken);
-            CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();;// principal contains userdetails
+            UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(username, password);
+            Authentication authentication = authManager.authenticate(authToken);// Delegates to DAOAuthentication provider to authenticate
+            CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();// principal contains userdetails
             String token = jwtTokenService.generateToken(userDetails.getUsername(),userDetails.getAuthorities());
             log.info("Token Generated At: , subject={}" , LocalTime.now());
             SecurityContextHolder.getContext().setAuthentication(authentication);
